@@ -15,7 +15,6 @@ WORKDIR MG5_aMC_v2_6_2
 ENV ROOTSYS /usr/local
 ENV PATH $PATH:$ROOTSYS/bin
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$ROOTSYS/lib
-ENV DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH:$ROOTSYS/lib
 
 RUN echo install Delphes | /home/hep/MG5_aMC_v2_6_2/bin/mg5_aMC
 RUN echo install ExRootAnalysis | /home/hep/MG5_aMC_v2_6_2/bin/mg5_aMC
