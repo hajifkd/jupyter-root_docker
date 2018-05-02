@@ -2,25 +2,35 @@
 
 [MadGraph](https://launchpad.net/mg5amcnlo) is a integrated event generator for the high energy phisics and
 widely used in that field.
-However, to install it correctly with Pythia and Delphes, some complicated process is needed and
-it is a little bit hard for those who are not so familiar with \*nixs.
 
-Here, I made a docker container for MadGraph. Docker is easy to use!
+This docker image significantly simplifies the process to use MadGraph.
 
-# install
+## Prerequisite
+
+You need to install docker first. Check [here](https://docs.docker.com/install/).
+
+## Install
 
 ```bash
-$ docker pull hfukuda/madgraph
+docker pull hfukuda/madgraph
 ```
 
-# usage
+## Usage
 
 This container uses model files in /var/UFO\_models and outputs in /var/MG\_outputs.
 
 So you should indicate these folders like this:
 
 ```bash
-$ docker run -t -i -v $HOME/models:/var/UFO_models -v $HOME/outputs:/var/MG_outputs hfukuda/madgraph
+docker run -t -i -v $HOME/models:/var/UFO_models -v $HOME/outputs:/var/MG_outputs hfukuda/madgraph
 ```
 
-Alternatively, you can use a volume container.
+Note that the local path must be an absolute, not a relative one.
+
+### Run madevent
+
+To use madevent for a process named `PROC_NAME`, you can run
+
+```bash
+docker run -it --rm -v $HOME/outputs:/var/MG_outputs -w /var/MG_outputs/PROC_NAME hfukuda/madgraph bin/madevent
+```
