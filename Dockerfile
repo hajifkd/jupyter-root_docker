@@ -5,7 +5,7 @@ USER root
 RUN apt-get update
 
 RUN apt-get install -y --no-install-recommends \
-wget ca-certificates python gfortran build-essential ghostscript vim
+wget ca-certificates python gfortran build-essential ghostscript vim libboost-all-dev
 
 WORKDIR /home/hep
 
