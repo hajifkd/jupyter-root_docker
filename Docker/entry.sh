@@ -12,5 +12,5 @@ done
 
 popd
 
-/home/hep/MG5_aMC_v2_6_2/bin/mg5_aMC
+HOME=/var/MG_outputs /home/hep/MG5_aMC_v2_6_2/bin/mg5_aMC
 
