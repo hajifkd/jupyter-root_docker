@@ -2,7 +2,7 @@
 
 MODEL_DIR=${MODEL_DIR-/var/UFO_models}
 
-pushd /home/hep/MG5_aMC_v2_6_2/models
+pushd /home/hep/${MG_VERSION}/models
 
 for d in `ls "$MODEL_DIR"`; do
   if [ ! -e $d ]; then
@@ -12,5 +12,5 @@ done
 
 popd
 
-HOME=/var/MG_outputs /home/hep/MG5_aMC_v2_6_2/bin/mg5_aMC
+HOME=/var/MG_outputs /home/hep/${MG_VERSION}/bin/mg5_aMC
 
