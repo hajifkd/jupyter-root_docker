@@ -1,35 +1,52 @@
 FROM rootproject/root-ubuntu16
 
 USER root
+ENV HOME /root
 
 RUN apt-get update
 
 RUN apt-get install -y --no-install-recommends \
-wget ca-certificates python gfortran build-essential ghostscript vim libboost-all-dev
+    python-setuptools \
+    python-pip \
+    wget \
+    bzip2 \
+    ca-certificates \
+    sudo \
+    locales \
+    fonts-liberation \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /home/hep
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen
 
-ENV MG_VERSION="MG5_aMC_v2_6_3"
-
-RUN wget --quiet -O- https://launchpad.net/mg5amcnlo/2.0/2.6.x/+download/MG5_aMC_v2.6.3.tar.gz | tar xzf -
-WORKDIR /home/hep/${MG_VERSION}
 
 ENV ROOTSYS /usr/local
 ENV PATH $PATH:$ROOTSYS/bin
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$ROOTSYS/lib
+ENV PYTHONPATH $ROOTSYS/lib/root:$PYTHONPATH
 
-RUN echo install Delphes | /home/hep/${MG_VERSION}/bin/mg5_aMC
-RUN echo install ExRootAnalysis | /home/hep/${MG_VERSION}/bin/mg5_aMC
-RUN printf 'install pythia8\ny\n' | /home/hep/${MG_VERSION}/bin/mg5_aMC
+RUN pip2 install jupyter metakernel
 
-WORKDIR /home/hep/${MG_VERSION}/HEPTools/lhapdf6/share/LHAPDF
-# Download a default PDF
-RUN wget --quiet -O- https://www.hepforge.org/archive/lhapdf/pdfsets/6.2/NNPDF23_lo_as_0130_qed.tar.gz | tar xzf -
+RUN cp -r $ROOTSYS/etc/root/notebook/kernels/root/ /usr/local/share/jupyter/kernels/
 
-WORKDIR /var/MG_outputs
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/home/hep/${MG_VERSION}/HEPTools/lib/
+# User
+ENV SHELL=/bin/bash \
+    NB_USER=jovyan \
+    NB_UID=1000 \
+    NB_GID=100 \
+    LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
+RUN groupadd wheel -g 11 && \
+    echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
+    useradd -m -s /bin/bash -N -u $NB_UID $NB_USER
 
-RUN chmod 777 /home/hep/${MG_VERSION}/models
+USER $NB_UID
+ENV HOME /home/$NB_USER
+RUN mkdir /home/$NB_USER/work
+WORKDIR /home/$NB_USER/work
 
-ADD entry.sh /home/hep/entry.sh
-CMD /home/hep/entry.sh
+EXPOSE 8888
+CMD ["jupyter", "notebook", "--ip=0.0.0.0"]
+
