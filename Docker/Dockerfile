@@ -8,6 +8,8 @@ RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
     python-setuptools \
     python-pip \
+    python3-setuptools \
+    python3-pip \
     wget \
     bzip2 \
     ca-certificates \
@@ -26,21 +28,27 @@ ENV PATH $PATH:$ROOTSYS/bin
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$ROOTSYS/lib
 ENV PYTHONPATH $ROOTSYS/lib/root:$PYTHONPATH
 
+RUN pip2 install --upgrade pip
 RUN pip2 install jupyter metakernel
+RUN pip3 install --upgrade pip
+RUN pip3 install ipykernel
 
 RUN cp -r $ROOTSYS/etc/root/notebook/kernels/root/ /usr/local/share/jupyter/kernels/
+
+ENV TINI_VERSION v0.18.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
 
 # User
 ENV SHELL=/bin/bash \
     NB_USER=jovyan \
     NB_UID=1000 \
-    NB_GID=100 \
     LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8
-RUN groupadd wheel -g 11 && \
-    echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
-    useradd -m -s /bin/bash -N -u $NB_UID $NB_USER
+RUN useradd -m -s /bin/bash -u $NB_UID $NB_USER
+RUN echo "jovyan ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/jovyan
 
 USER $NB_UID
 ENV HOME /home/$NB_USER
