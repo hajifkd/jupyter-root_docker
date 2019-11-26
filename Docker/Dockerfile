@@ -53,6 +53,7 @@ RUN echo "jovyan ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/jovyan
 USER $NB_UID
 ENV HOME /home/$NB_USER
 RUN mkdir /home/$NB_USER/work
+RUN mkdir /home/$NB_USER/.jupyter
 WORKDIR /home/$NB_USER/work
 
 EXPOSE 8888
