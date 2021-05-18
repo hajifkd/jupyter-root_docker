@@ -19,6 +19,8 @@ ENTRYPOINT ["/tini", "--"]
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
 
+RUN pip3 install matplotlib numpy scipy
+
 ENV SHELL=/bin/bash \
     NB_USER=jovyan \
     NB_UID=1000 \
